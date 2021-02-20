@@ -49,19 +49,19 @@ public class Spawns {
         Spawners horsePlainsSpawner = new Spawners(ModEntities.HORSE_GENETIC, horsePlainsWeight, 2, 6);
         int horseSavannaWeight = (int)Math.round(1 * HorseConfig.SPAWN.horseSpawnMultiplier.get());
         Spawners horseSavannaSpawner = new Spawners(ModEntities.HORSE_GENETIC, horseSavannaWeight, 2, 6);
-        int donkeyWeight = (int)Math.round(1 * HorseConfig.SPAWN.donkeySpawnMultiplier.get());
+        //int donkeyWeight = (int)Math.round(1 * HorseConfig.SPAWN.donkeySpawnMultiplier.get());
         // It seems 1.16.2 has increased donkey max herd size in savannas from 1 to 3, to match the plains
-        Spawners donkeySpawner = new Spawners(ModEntities.DONKEY_GENETIC, donkeyWeight, 1, 3);
+        //Spawners donkeySpawner = new Spawners(ModEntities.DONKEY_GENETIC, donkeyWeight, 1, 3);
 
         // Add to the spawn list according to biome type
         List<Spawners> spawns = event.getSpawns().getSpawner(EntityClassification.CREATURE);
         if (event.getCategory() == Biome.Category.PLAINS) {
             spawns.add(horsePlainsSpawner);
-            spawns.add(donkeySpawner);
+            //spawns.add(donkeySpawner);
         }
         else if (event.getCategory() == Biome.Category.SAVANNA) {
             spawns.add(horseSavannaSpawner);
-            spawns.add(donkeySpawner);
+            //spawns.add(donkeySpawner);
         }
     }
 
@@ -74,11 +74,11 @@ public class Spawns {
             if (entry.type == EntityType.HORSE && HorseConfig.SPAWN.blockVanillaHorseSpawns.get()) {
                 HorseColors.logger.debug("Removing vanilla horse spawn: " + entry);
                 entriesToRemove.add(entry);
-            }
+            }/*
             else if (entry.type == EntityType.DONKEY && HorseConfig.SPAWN.blockVanillaDonkeySpawns.get()) {
                 HorseColors.logger.debug("Removing vanilla donkey spawn: " + entry);
                 entriesToRemove.add(entry);
-            }
+            }*/
         }
 
         for (Spawners entry : entriesToRemove) {

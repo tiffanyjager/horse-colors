@@ -216,21 +216,21 @@ public class HorseConfig
                     .comment("Larger numbers make horses more common, smaller numbers make them less common.",
                              "1.0 makes them as common as in vanilla.")
                     .defineInRange("horseSpawnMultiplier", 1.0, 0.0, 1000.0);
-
+/*
             donkeySpawnMultiplier = builder
                     .comment("Larger numbers make donkeys more common, smaller numbers make them less common.",
                              "1.0 makes them as common as in vanilla.")
-                    .defineInRange("donkeySpawnMultiplier", 1.0, 0.0, 1000.0);
+                    .defineInRange("donkeySpawnMultiplier", 1.0, 0.0, 1000.0);*/
 
             blockVanillaHorseSpawns =  builder
                     .comment("Whether to allow new vanilla horses to spawn. This will not affect any",
                              "horses that already exist.")
                     .define("blockVanillaHorseSpawns", true);
-
+/*
             blockVanillaDonkeySpawns =  builder
                     .comment("Whether to allow new vanilla donkeys to spawn. This will not affect any",
                              "horses that already exist.")
-                    .define("blockVanillaDonkeySpawns", true);
+                    .define("blockVanillaDonkeySpawns", true);*/
 
             convertVanillaHorses = builder
                     .comment("If this is set to true, existing horses will be turned into horses with genetics")

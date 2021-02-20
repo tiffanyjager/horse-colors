@@ -79,8 +79,8 @@ public class ModEntities {
     public static void registerSpawnEggs(RegistryEvent.Register<Item> event) {
 
         event.getRegistry().register(HORSE_SPAWN_EGG);
-        event.getRegistry().register(DONKEY_SPAWN_EGG);
-        event.getRegistry().register(MULE_SPAWN_EGG);
+        //event.getRegistry().register(DONKEY_SPAWN_EGG);
+        //event.getRegistry().register(MULE_SPAWN_EGG);
     }
 
     @OnlyIn(Dist.CLIENT)
