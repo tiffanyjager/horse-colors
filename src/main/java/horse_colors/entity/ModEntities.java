@@ -68,9 +68,9 @@ public class ModEntities {
     public static void registerEntities(final RegistryEvent.Register<EntityType<?>> event) {
 
         event.getRegistry().registerAll(
-                HORSE_GENETIC,
+                HORSE_GENETIC/*,
                 DONKEY_GENETIC,
-                MULE_GENETIC
+                MULE_GENETIC*/
         );
         registerAttributes();
     }
