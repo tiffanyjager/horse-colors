@@ -10,6 +10,7 @@ import sekelsta.horse_colors.client.renderer.CustomLayeredTexture;
 import sekelsta.horse_colors.client.renderer.TextureLayerGroup;
 import sekelsta.horse_colors.config.HorseConfig;
 import sekelsta.horse_colors.util.RandomSupplier;
+import sekelsta.horse_colors.util.Util;
 
 public abstract class Genome {
     public final Species species;
@@ -296,6 +297,28 @@ public abstract class Genome {
 
     public int getRandom(String key) {
         return randSource.getVal(key, this.entity.getSeed());
+    }
+
+    // Returns the gene data as a base 64 string of printable characters
+    public String getBase64() {
+        String genes = entity.getGeneData();
+        StringBuilder builder = new StringBuilder(genes.length());
+        for (int i = 0; i < genes.length(); ++i) {
+            int v = (int)genes.charAt(i);
+            builder.append(Util.toBase64(v));
+        }
+        return builder.toString();
+    }
+
+    // Reads the gene data from a base 64 string
+    public void setFromBase64(String base64Genes) {
+        StringBuilder builder = new StringBuilder(base64Genes.length());
+        for (int i = 0; i < base64Genes.length(); ++i) {
+            char c = base64Genes.charAt(i);
+            int v = Util.fromBase64(c);
+            builder.append((char)v);
+        }
+        entity.setGeneData(builder.toString());
     }
 
     // Chromosomal linkage for storing in a list

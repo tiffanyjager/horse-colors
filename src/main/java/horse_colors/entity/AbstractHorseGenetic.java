@@ -91,7 +91,7 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
     protected static final AttributeModifier CSNB_SPEED_MODIFIER = new AttributeModifier(CSNB_SPEED_UUID, "CSNB speed penalty", -0.6, AttributeModifier.Operation.MULTIPLY_TOTAL);
     protected static final AttributeModifier CSNB_JUMP_MODIFIER = new AttributeModifier(CSNB_JUMP_UUID, "CSNB jump penalty", -0.6, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
-    protected static final int HORSE_GENETICS_VERSION = 2;
+    protected static final int HORSE_GENETICS_VERSION = 3;
 
     protected List<AbstractHorseGenetic> unbornChildren = new ArrayList<>();
 
@@ -172,8 +172,13 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
     public void addAdditionalSaveData(CompoundNBT compound)
     {
         super.addAdditionalSaveData(compound);
-        compound.putString("Genes", this.getGeneData());
+        CompoundNBT genetic = new CompoundNBT();
+        writeGeneticData(genetic);
+        compound.put("HorseGeneticsData", genetic);
+    }
 
+    private void writeGeneticData(CompoundNBT compound) {
+        compound.putString("Genes", this.getGenome().getBase64());
         compound.putInt("Random", this.getSeed());
         compound.putInt("true_age", trueAge);
         compound.putBoolean("gender", this.isMale());
@@ -189,16 +194,60 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
             compound.put("unborn_children", unbornChildrenTag);
         }   
         compound.putFloat("mother_size", this.getMotherSize());
-        writeLegacyAdditional(compound);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound)
     {
         super.readAdditionalSaveData(compound);
+        // Get save format version
+        int version = 0;
+        if (this.getPersistentData().contains("HorseGeneticsVersion")) {
+            version = this.getPersistentData().getInt("HorseGeneticsVersion");
+        }
+        // Read the main part of the data
+        if (version < 3) {
+            readGeneticData(compound, version);
+        }
+        else {
+            readGeneticData(compound.getCompound("HorseGeneticsData"), version);
+        }
+        // Ensure the true age matches the age
+        if (this.trueAge < 0 != this.age < 0) {
+            this.trueAge = this.age;
+        }
+
+        // Set any genes that were specified in a human-readable format
+        readExtraGenes(compound);
+
+        this.useGeneticAttributes();
+        this.updateContainerEquipment();
+
+        if (this instanceof HorseGeneticEntity) {
+            int spawndata = compound.getInt("VillageSpawn");
+            if (spawndata != 0) {
+                this.initFromVillageSpawn();
+            }
+        }
+
+        // Done reading, so update format version to the one that will be written
+        this.getPersistentData().putInt("HorseGeneticsVersion", HORSE_GENETICS_VERSION);
+    }
+
+
+    // A helper function for reading the data either from the main entity
+    // tag in save format versions 2 and under, or for reading it from its own tag
+    // in versions 3+
+    private void readGeneticData(CompoundNBT compound, int version) {
         // Set genes if they exist
         if (compound.contains("Genes")) {
-            this.setGeneData(compound.getString("Genes"));
+            if (version < 3) {
+                // Read genes using the 1:1 conversion of chars to nums
+                this.setGeneData(compound.getString("Genes"));
+            }
+            else {
+                this.getGenome().setFromBase64(compound.getString("Genes"));
+            }
         }
         // Otherwise, use a breed for a base if given one
         else if (compound.contains("Breed")) {
@@ -233,6 +282,7 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
         else {
             this.setMale(this.random.nextBoolean());
         }
+
         int pregnantSince = -1;
         if (compound.contains("pregnant_since")) {
             pregnantSince = compound.getInt("pregnant_since");
@@ -271,32 +321,12 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
                 }
             }
         }
+
         float motherSize = 1f;
         if (compound.contains("mother_size")) {
             motherSize = compound.getFloat("mother_size");
         }
         setMotherSize(motherSize);
-
-        // Ensure the true age matches the age
-        if (this.trueAge < 0 != this.age < 0) {
-            this.trueAge = this.age;
-        }
-
-        // Set any genes that were specified in a human-readable format
-        readExtraGenes(compound);
-
-        this.useGeneticAttributes();
-        this.updateContainerEquipment();
-
-        if (this instanceof HorseGeneticEntity) {
-            int spawndata = compound.getInt("VillageSpawn");
-            if (spawndata != 0) {
-                this.initFromVillageSpawn();
-            }
-        }
-
-        // Done reading, so update format version to the one that will be written
-        this.getPersistentData().putInt("HorseGeneticsVersion", HORSE_GENETICS_VERSION);
     }
 
     private void readExtraGenes(CompoundNBT compound) {
@@ -347,22 +377,6 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
             map.put("immune", compound.getInt("Immune"));
         }
         this.genes.setLegacyGenes(map);
-    }
-
-    // This will no longer be needed after dropping support for Minecraft 1.16
-    public void writeLegacyAdditional(CompoundNBT compound) {
-        Map<String, Integer> map = getGenome().getLegacyGenes();
-        compound.putInt("Variant", map.get("0"));
-        compound.putInt("Variant2", map.get("1"));
-        compound.putInt("Variant3", map.get("2"));
-        compound.putInt("Variant4", map.get("3"));
-        compound.putInt("Variant5", map.get("4"));
-        compound.putInt("SpeedGenes", map.get("speed"));
-        compound.putInt("JumpGenes", map.get("jump"));
-        compound.putInt("HealthGenes", map.get("health"));
-        compound.putInt("MHC1", map.get("mhc1"));
-        compound.putInt("MHC2", map.get("mhc2"));
-        compound.putInt("Immune", map.get("immune"));
     }
 
     public void copyAbstractHorse(AbstractHorseEntity horse)
