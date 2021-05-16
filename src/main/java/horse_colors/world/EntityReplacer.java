@@ -20,18 +20,28 @@ import sekelsta.horse_colors.entity.*;
 public class EntityReplacer {
     private static Random rand = new Random();
 
+    // Makes any modifications needed to the entity, and recursively to its
+    // passengers
+    public static void recursiveModifyEntityCompound(CompoundNBT compound) {
+        // Check if the entity is a horse
+        String horseId = ModEntities.HORSE_GENETIC.getRegistryName().toString();
+        if (horseId.equals(compound.getString("id"))) {
+            geneticToVanillaHorseTag(compound);
+        }
+        // Call recursively on passengers
+        ListNBT passengers = compound.getList("Passengers", 10);
+        for (int i = 0; i < passengers.size(); ++i) {
+            recursiveModifyEntityCompound(passengers.getCompound(i));
+        }
+    }
+
     @SubscribeEvent
     public static void modifyChunkSave(ChunkDataEvent.Save event) {
         CompoundNBT chunkCompound = event.getData();
         CompoundNBT level = chunkCompound.getCompound("Level");
         ListNBT entities = level.getList("Entities", 10);
-        String horseId = ModEntities.HORSE_GENETIC.getRegistryName().toString();
         for(int i = 0; i < entities.size(); ++i) {
-            CompoundNBT entityCompound = entities.getCompound(i);
-            // TODO: this doesn't check for horses being passengers
-            if (horseId.equals(entityCompound.getString("id"))) {
-                geneticToVanillaHorseTag(entityCompound);
-            }
+            recursiveModifyEntityCompound(entities.getCompound(i));
         }
     }
 
@@ -60,6 +70,10 @@ public class EntityReplacer {
             }
             // Cancel the event regardless
             event.setCanceled(true);
+            // If the horse should be a passenger, make it so
+            if (horse.isPassenger()) {
+                // TODO horse.getVehicle()
+            }
         }
 	}
 
