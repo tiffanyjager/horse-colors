@@ -21,7 +21,7 @@ import sekelsta.horse_colors.entity.ModEntities;
 import sekelsta.horse_colors.client.ClientEventHandler;
 import sekelsta.horse_colors.item.ModItems;
 import sekelsta.horse_colors.network.HorseColorsPacketHandler;
-import sekelsta.horse_colors.world.HorseReplacer;
+import sekelsta.horse_colors.world.EntityReplacer;
 import sekelsta.horse_colors.world.Spawns;
 
 @Mod(HorseColors.MODID)
@@ -40,7 +40,7 @@ public class HorseColors
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(Spawns::onLoadComplete);
         MinecraftForge.EVENT_BUS.addListener(ContainerEventHandler::editContainer);
-        MinecraftForge.EVENT_BUS.register(HorseReplacer.class);
+        MinecraftForge.EVENT_BUS.register(EntityReplacer.class);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, HorseConfig.spec);
         HorseColorsPacketHandler.registerPackets();

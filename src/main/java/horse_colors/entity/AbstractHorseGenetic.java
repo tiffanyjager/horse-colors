@@ -379,18 +379,6 @@ public abstract class AbstractHorseGenetic extends AbstractChestedHorseEntity im
         this.genes.setLegacyGenes(map);
     }
 
-    public void copyAbstractHorse(AbstractHorseEntity horse)
-    {
-        // Copy NBT data (initialize from horse's NBT)
-        CompoundNBT vanilla = horse.saveWithoutId(new CompoundNBT());
-        // Don't try to read Minecraft's variant as legacy gene data
-        if (vanilla.contains("Variant")) {
-            vanilla.remove("Variant");
-        }
-        this.load(vanilla);
-        this.useGeneticAttributes();
-    }
-
     public int getDisplayAge() {
         return this.entityData.get(DISPLAY_AGE);
     }
