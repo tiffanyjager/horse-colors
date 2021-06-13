@@ -55,8 +55,9 @@ public class MuleGeneticEntity extends AbstractHorseGenetic {
     * Helper method to read subclass entity data from NBT.
     */
     public void readAdditionalSaveData(CompoundNBT compound) {
-        super.readAdditionalSaveData(compound);
-        this.setSpecies(Species.valueOf(compound.getString("Species")));
+        throw new RuntimeException("Not yet implemented");
+        //super.readAdditionalSaveData(compound);
+        //this.setSpecies(Species.valueOf(compound.getString("Species")));
     }
 
     @Override

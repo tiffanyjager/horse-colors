@@ -39,6 +39,11 @@ public class DonkeyGeneticEntity extends AbstractHorseGenetic {
     }
 
     @Override
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        throw new RuntimeException("Not yet implemented");
+    }
+
+    @Override
     public ResourceLocation getDefaultLootTable() {
         return this.LOOT_TABLE;
     }
